@@ -47,6 +47,7 @@ jobs:
           ./start-build-env.sh
       - name: Build Hadoop
         run: |
+          echo "CURRENT:PWD   $(ls) : $(pwd)"
           mvn package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true
 
 
