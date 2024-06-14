@@ -41,14 +41,13 @@ jobs:
           repository: apache/hadoop
           path: hadoop-3.3 # Store in $GITHUB_WORKSPACE/other-repo
           ref: branch-3.3
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4.2.1
+        with:
+          java-version: 8
+          distribution: temurin
       - name: Install Dependencies
         run: |
-          # Oracle JDK 1.8 (preferred)
-          sudo apt-get purge openjdk*
-          sudo apt-get install software-properties-common
-          sudo add-apt-repository ppa:webupd8team/java
-          sudo apt-get update
-          sudo apt-get -y install openjdk-8-jdk
           # Maven
           sudo apt-get -y install maven
           # Native libraries
