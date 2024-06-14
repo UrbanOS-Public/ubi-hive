@@ -41,11 +41,13 @@ jobs:
           repository: apache/hadoop
           path: hadoop-3.3 # Store in $GITHUB_WORKSPACE/other-repo
           ref: branch-3.3
+          
       - name: Setup Java JDK
         uses: actions/setup-java@v4.2.1
         with:
           java-version: 8
           distribution: temurin
+          
       - name: Install Dependencies
         run: |
           # Maven
@@ -65,6 +67,15 @@ jobs:
         run: |
           cd hadoop-3.3
           mvn package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true
+
+      - name: Upload Hadoop Build Artifact
+        uses: actions/upload-artifact@v4.3.3
+        with:
+          name: hadoop-3.3
+          path: hadoop-dist/target/hadoop-3.3.9-SNAPSHOT
+
+
+          
 
 
           
