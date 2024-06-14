@@ -43,6 +43,7 @@ jobs:
           ref: branch-3.3
       - name: Run Hadoop Dev Container
         run: |
+          cd $GITHUB_WORKSPACE
           ./start-build-env.sh
       - name: Build Hadoop
         run: |
