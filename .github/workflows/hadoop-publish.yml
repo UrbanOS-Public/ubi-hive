@@ -67,12 +67,13 @@ jobs:
         run: |
           cd hadoop-3.3
           mvn package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true
+          echo "$(pwd)"
 
       - name: Upload Hadoop Build Artifact
         uses: actions/upload-artifact@v4.3.3
         with:
           name: hadoop-3.3
-          path: hadoop-dist/target/hadoop-3.3.9-SNAPSHOT
+          path: hadoop-3.3/hadoop-dist/target/hadoop-3.3.9-SNAPSHOT
 
 
           
