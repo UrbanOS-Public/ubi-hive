@@ -41,13 +41,30 @@ jobs:
           repository: apache/hadoop
           path: hadoop-3.3 # Store in $GITHUB_WORKSPACE/other-repo
           ref: branch-3.3
-      - name: Run Hadoop Dev Container
+      - name: Install Dependencies
         run: |
-          cd hadoop-3.3
-          ./start-build-env.sh
+          # Oracle JDK 1.8 (preferred)
+          sudo apt-get purge openjdk*
+          sudo apt-get install software-properties-common
+          sudo add-apt-repository ppa:webupd8team/java
+          sudo apt-get update
+          sudo apt-get -y install openjdk-8-jdk
+          # Maven
+          sudo apt-get -y install maven
+          # Native libraries
+          sudo apt-get -y install build-essential autoconf automake libtool cmake zlib1g-dev pkg-config libssl-dev libsasl2-dev
+          # Protocol Buffers 3.7.1 (required to build native code)
+          curl -L -s -S https://github.com/protocolbuffers/protobuf/releases/download/v3.7.1/protobuf-java-3.7.1.tar.gz -o protobuf-3.7.1.tar.gz
+          mkdir protobuf-3.7-src
+          tar xzf protobuf-3.7.1.tar.gz --strip-components 1 -C protobuf-3.7-src && cd protobuf-3.7-src
+          ./configure
+          make -j$(nproc)
+          sudo make install
+          cd ..
+
       - name: Build Hadoop
         run: |
-          echo "CURRENT:PWD   $(ls) : $(pwd)"
+          cd hadoop-3.3
           mvn package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true
 
 
