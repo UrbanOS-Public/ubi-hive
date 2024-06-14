@@ -41,6 +41,12 @@ jobs:
           repository: apache/hadoop
           path: hadoop-3.3 # Store in $GITHUB_WORKSPACE/other-repo
           ref: branch-3.3
+      - name: Run Hadoop Dev Container
+        run: |
+          ./start-build-env.sh
+      - name: Build Hadoop
+        run: |
+          mvn package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true
 
 
           
