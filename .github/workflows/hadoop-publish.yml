@@ -74,6 +74,9 @@ jobs:
         with:
           name: hadoop-3.3
           path: hadoop-3.3/hadoop-dist/target/hadoop-3.3.9-SNAPSHOT
+      - name: Echo
+        run: |
+          echo "$(pwd)"
 
 
           
