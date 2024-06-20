@@ -69,7 +69,7 @@ jobs:
           mvn package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true
 
       - name: 'Tar files'
-        run: tar -cvf hadoop-3.3.tar hadoop-3.3/hadoop-dist/target/hadoop-3.3.9-SNAPSHOT
+        run: tar -cvf hadoop-3.3.tar -C hadoop-3.3/hadoop-dist/target hadoop-3.3.9-SNAPSHOT
 
       - name: Upload Hadoop Build Artifact
         uses: actions/upload-artifact@v4.3.3
