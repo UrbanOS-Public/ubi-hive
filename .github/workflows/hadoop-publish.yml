@@ -35,7 +35,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout other repo
+      - name: Checkout Hadoop
         uses: actions/checkout@v4
         with:
           repository: apache/hadoop
@@ -67,16 +67,15 @@ jobs:
         run: |
           cd hadoop-3.3
           mvn package -Pdist -DskipTests -Dtar -Dmaven.javadoc.skip=true
-          echo "$(pwd)"
+
+      - name: 'Tar files'
+        run: tar -cvf hadoop-3.3.tar hadoop-3.3/hadoop-dist/target/hadoop-3.3.9-SNAPSHOT
 
       - name: Upload Hadoop Build Artifact
         uses: actions/upload-artifact@v4.3.3
         with:
           name: hadoop-3.3
-          path: hadoop-3.3/hadoop-dist/target/hadoop-3.3.9-SNAPSHOT
-      - name: Echo
-        run: |
-          echo "$(pwd)"
+          path: hadoop-3.3.tar
 
 
           
