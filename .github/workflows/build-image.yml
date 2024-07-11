@@ -45,6 +45,7 @@ jobs:
 
       - name: Build Hadoop
         run: |
+          echo $(ls)
           cd ubi-hive
           echo $(ls)
 
