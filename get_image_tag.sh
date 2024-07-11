@@ -4,6 +4,8 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_NUM_FILE="${SCRIPT_DIR}/image_build_num.txt"
 BUILD_DESCRIPTOR_FILE="${SCRIPT_DIR}/image_build_descriptor.txt"
 
+echo $BUILD_NUM_FILE
+
 if [[ -s ${BUILD_NUM_FILE} ]]
 then
     BUILD_NUM=$(head -1 ${BUILD_NUM_FILE} | tr -d '\n')
