@@ -9,6 +9,7 @@ ORG="urbanos"
 APP="ubi-hive"
 IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
 IMAGE_TAG="$(${SCRIPT_DIR}/get_image_tag.sh)-hadoop-3.3.6"
+echo $(${SCRIPT_DIR}/get_image_tag.sh)
 echo $IMAGE_TAG
 export ACCESS_TOKEN=$1
 
