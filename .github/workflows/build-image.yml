@@ -42,7 +42,7 @@ jobs:
 
       - name: test
         run: |
-          echo pwd
+          echo $(pwd)
           
       - name: Build Image
         run: |
