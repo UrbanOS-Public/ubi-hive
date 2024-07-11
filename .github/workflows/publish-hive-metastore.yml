@@ -42,7 +42,7 @@ jobs:
 
       - name: test
         run: |
-          echo $QUAY_USER
+          ./get_image_tag.sh
           
       - name: Build Image
         run: |
