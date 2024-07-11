@@ -1,4 +1,4 @@
-name: Build Hive Metastore
+name: Publish Hive Metastore
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -21,6 +21,8 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  QUAY_USER: ${{ secrets.QUAY_USERNAME }}
+  QUAY_TOKEN: ${{ secrets.QUAY_PASSWORD }}
 
 
 jobs:
@@ -34,20 +36,18 @@ jobs:
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
 
-    steps:
-      - name: Test contents
-        run: |
-          echo $(ls)
-          
+    steps:          
       - name: Checkout ubi-hive
         uses: actions/checkout@v4
 
-
-      - name: Build Hadoop
+      - name: test
         run: |
-          echo $(ls)
-          cd ubi-hive
-          echo $(ls)
+          echo $(pwd)
+          echo $(ls $(pwd))
+          
+      - name: Build Image
+        run: |
+          ./build_deploy.sh ${{ secrets.ACCESS_TOKEN }}
 
 
 
