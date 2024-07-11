@@ -1,25 +1,25 @@
 
-FROM registry.access.redhat.com/ubi8/ubi:latest
+FROM registry.access.redhat.com/ubi9/ubi:latest
 
-LABEL io.k8s.display-name="OpenShift Hive Metastore" \
-    io.k8s.description="This is an image used by Cost Management to install and run Hive Metastore." \
-    summary="This is an image used by Cost Management to install and run Hive Metastore." \
-    io.openshift.tags="openshift" \
-    maintainer="<cost-mgmt@redhat.com>"
-
-RUN yum -y update && yum clean all
+LABEL io.k8s.display-name="UrbanOS Hive Metastore" \
+    io.k8s.description="This is an image used by UrbanOS to install and run Hive Metastore." \
+    summary="This is an image used by UrbanOS to install and run Hive Metastore." \
+    io.openshift.tags="openshift"
 
 RUN \
+    subscription-manager register --username ijabbott --password QG@pcD!YpFCgGx5o && \
+    yum updateinfo list --security --nogpgcheck && \
+    yum -y update && yum clean all && \
     # symlink the python3.6 installed in the container
     ln -s /usr/libexec/platform-python /usr/bin/python && \
     # add PostgreSQL RPM repository to gain access to the postgres jdbc
-    yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
+    yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm && \
     set -xeu && \
     # Java 1.8 required for Hive/Hadoop
     # postgresql-jdbc needed so Hive can connect to postgres
     # jq is needed for the clowdapp entrypoint script to work properly
-    INSTALL_PKGS="java-1.8.0-openjdk postgresql-jdbc openssl jq" && \
-    yum install -y $INSTALL_PKGS --setopt=install_weak_deps=False --setopt=tsflags=nodocs && \
+    INSTALL_PKGS="java-1.8.0-openjdk postgresql-jdbc openssl jq unzip" && \
+    yum install -y $INSTALL_PKGS --setopt=install_weak_deps=False --setopt=tsflags=nodocs --nogpgcheck && \
     yum clean all && \
     rm -rf /var/cache/yum
 
@@ -33,17 +33,55 @@ ENV HADOOP_HOME=/opt/hadoop
 ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk
 ENV METASTORE_HOME=/opt/hive-metastore-bin
 
+
+RUN --mount=type=secret,id=ACCESS_TOKEN \
+    export ACCESS_TOKEN=$(cat /run/secrets/ACCESS_TOKEN) && \
+    echo $ACCESS_TOKEN
+
+RUN echo $ACCESS_TOKEN
 # Fetch the compiled Hadoop and Standalone Metastore
 RUN mkdir -p ${HADOOP_HOME} ${METASTORE_HOME}
 RUN \
-    curl -L https://downloads.apache.org/hadoop/core/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz | tar -zxf - -C ${HADOOP_HOME} --strip 1 && \
-    curl -L https://repo1.maven.org/maven2/org/apache/hive/hive-standalone-metastore/${METASTORE_VERSION}/hive-standalone-metastore-${METASTORE_VERSION}-bin.tar.gz | tar -zxf - -C ${METASTORE_HOME} --strip 1
+    # curl -L https://downloads.apache.org/hadoop/core/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz | tar -zxf - -C ${HADOOP_HOME} --strip 1 && \
+    --mount=type=secret,id=ACCESS_TOKEN \
+    ACCESS_TOKEN=$(cat /run/secrets/ACCESS_TOKEN) && \
+    curl -L \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $ACCESS_TOKEN" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        https://api.github.com/repos/UrbanOS-Public/urbanos-hadoop/actions/artifacts/1665038081/zip -o hadoop_artifact.zip && \
+        unzip hadoop_artifact.zip -d ${HADOOP_HOME} && \
+        tar -xvf ${HADOOP_HOME}/hadoop-3.3.tar -C ${HADOOP_HOME} --strip-components=1 && \
+        rm hadoop_artifact.zip && \
+        rm ${HADOOP_HOME}/hadoop-3.3.tar && \
+    curl -L \
+        -H "Accept: application/vnd.github+json" \
+        -H "Authorization: Bearer $ACCESS_TOKEN" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        https://api.github.com/repos/UrbanOS-Public/urbanos-hive/actions/artifacts/1664340422/zip -o hive_artifact.zip && \
+        unzip hive_artifact.zip -d ${METASTORE_HOME} && \
+        tar -xvf ${METASTORE_HOME}/hive-3.1.tar -C ${METASTORE_HOME} --strip-components=2 && \
+        rm hive_artifact.zip && \
+        rm ${METASTORE_HOME}/hive-3.1.tar
+    # curl -L https://repo1.maven.org/maven2/org/apache/hive/hive-standalone-metastore-server/${METASTORE_VERSION}/hive-standalone-metastore-server-${METASTORE_VERSION}-bin.tar.gz | tar -zxf - -C ${METASTORE_HOME} --strip 1
 
 RUN \
     # Configure Hadoop AWS Jars to be available to hive
     ln -s ${HADOOP_HOME}/share/hadoop/tools/lib/*aws* ${METASTORE_HOME}/lib && \
     # Configure Postgesql connector jar to be available to hive
     ln -s /usr/share/java/postgresql-jdbc.jar ${METASTORE_HOME}/lib/postgresql-jdbc.jar
+
+RUN \
+    # Remove htrace jar
+    rm -rf ${HADOOP_HOME}/share/hadoop/yarn/timelineservice
+
+RUN \
+    # Remove netty3 jar
+    rm ${HADOOP_HOME}/share/hadoop/hdfs/lib/netty-3.10.6.Final.jar
+
+RUN \
+    # Remove yarn-applications-catalog-webapp that contains netty3
+    rm ${HADOOP_HOME}/share/hadoop/yarn/hadoop-yarn-applications-catalog-webapp-3.3.9-SNAPSHOT.war
 
 RUN \
     # Fetch the jmx exporter. Needed for metrics server and liveness/readiness probes:

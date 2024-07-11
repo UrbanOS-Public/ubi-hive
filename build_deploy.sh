@@ -5,13 +5,21 @@ set -exv
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 IMAGE_REPO="quay.io"
-ORG="cloudservices"
+ORG="urbanos"
 APP="ubi-hive"
 IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
-IMAGE_TAG="$(${SCRIPT_DIR}/get_image_tag.sh)"
+IMAGE_TAG="$(${SCRIPT_DIR}/get_image_tag.sh)-hadoop-3.3.6"
+
+export ACCESS_TOKEN=$1
 
 if [[ -z "$QUAY_USER" || -z "$QUAY_TOKEN" ]]; then
     echo "QUAY_USER and QUAY_TOKEN must be set"
+    exit 1
+fi
+
+if [[ -z "$1" ]]; then
+    echo "User must provide access token as first argument:"
+    echo "./build_deploy.sh access-token"
     exit 1
 fi
 
@@ -29,7 +37,7 @@ trap job_cleanup EXIT ERR SIGINT SIGTERM
 DOCKER_CONF="$TMP_JOB_DIR/.docker"
 mkdir -p "$DOCKER_CONF"
 docker --config="$DOCKER_CONF" login -u="$QUAY_USER" -p="$QUAY_TOKEN" quay.io
-docker --config="$DOCKER_CONF" build -t "${IMAGE}:${IMAGE_TAG}" ${SCRIPT_DIR}
+GIT_AUTH_TOKEN=$1 docker --config="$DOCKER_CONF" build -t "${IMAGE}:${IMAGE_TAG}" ${SCRIPT_DIR} --secret id=ACCESS_TOKEN --progress=plain --no-cache
 docker --config="$DOCKER_CONF" push "${IMAGE}:${IMAGE_TAG}"
 
 docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:latest"
