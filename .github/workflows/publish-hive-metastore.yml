@@ -44,6 +44,7 @@ jobs:
         run: |
           echo $(pwd)
           echo $(ls $(pwd))
+          ./get_image_tag.sh
           
       - name: Build Image
         run: |
