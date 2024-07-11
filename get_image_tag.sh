@@ -21,5 +21,5 @@ else
     echo "The build descriptor file is missing or empty."
     exit -1
 fi
-
+echo ${BUILD_DESCRIPTOR}
 echo "$(${SCRIPT_DIR}/get_metastore_version.sh)-${BUILD_DESCRIPTOR}-${BUILD_NUM}"
