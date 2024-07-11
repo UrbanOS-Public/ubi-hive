@@ -21,6 +21,8 @@ env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
+  QUAY_USER: ${{ secrets.QUAY_USERNAME }}
+  QUAY_TOKEN: ${{ secrets.QUAY_PASSWORD }}
 
 
 jobs:
@@ -34,20 +36,13 @@ jobs:
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
 
-    steps:
-      - name: Test contents
-        run: |
-          echo $(ls)
-          
+    steps:          
       - name: Checkout ubi-hive
         uses: actions/checkout@v4
 
-
-      - name: Build Hadoop
+      - name: Build Image
         run: |
-          echo $(ls)
-          cd ubi-hive
-          echo $(ls)
+          ./build_deploy.sh ${{ secrets.ACCESS_TOKEN }}
 
 
 
