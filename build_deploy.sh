@@ -3,7 +3,7 @@
 set -exv
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-
+echo $SCRIPT_DIR
 IMAGE_REPO="quay.io"
 ORG="urbanos"
 APP="ubi-hive"
@@ -37,7 +37,7 @@ trap job_cleanup EXIT ERR SIGINT SIGTERM
 DOCKER_CONF="$TMP_JOB_DIR/.docker"
 mkdir -p "$DOCKER_CONF"
 docker --config="$DOCKER_CONF" login -u="$QUAY_USER" -p="$QUAY_TOKEN" quay.io
-GIT_AUTH_TOKEN=$1 docker --config="$DOCKER_CONF" build -t "${IMAGE}:${IMAGE_TAG}" ${SCRIPT_DIR} --secret id=ACCESS_TOKEN --progress=plain --no-cache
+docker --config="$DOCKER_CONF" build -t "${IMAGE}:${IMAGE_TAG}" ${SCRIPT_DIR} --secret id=ACCESS_TOKEN --progress=plain --no-cache
 docker --config="$DOCKER_CONF" push "${IMAGE}:${IMAGE_TAG}"
 
 docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:latest"
