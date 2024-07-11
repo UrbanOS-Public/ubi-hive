@@ -1,4 +1,4 @@
-name: Build Hive Metastore
+name: Publish Hive Metastore
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -43,6 +43,7 @@ jobs:
       - name: test
         run: |
           echo $(pwd)
+          echo $(ls $(pwd))
           
       - name: Build Image
         run: |
