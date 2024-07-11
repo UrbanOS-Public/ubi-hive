@@ -42,9 +42,7 @@ jobs:
 
       - name: test
         run: |
-          echo $(pwd)
-          echo $(ls $(pwd))
-          ./get_image_tag.sh
+          echo $QUAY_USER
           
       - name: Build Image
         run: |
