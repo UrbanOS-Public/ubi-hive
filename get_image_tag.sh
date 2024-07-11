@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#!/bin/bash
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_NUM_FILE="${SCRIPT_DIR}/image_build_num.txt"
