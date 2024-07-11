@@ -8,7 +8,7 @@ IMAGE_REPO="quay.io"
 ORG="urbanos"
 APP="ubi-hive"
 IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
-IMAGE_TAG="$(${SCRIPT_DIR}/get_image_tag.sh)-hadoop-3.3.6"
+IMAGE_TAG="$(bash ${SCRIPT_DIR}/get_image_tag.sh)-hadoop-3.3.6"
 
 export ACCESS_TOKEN=$1
 
