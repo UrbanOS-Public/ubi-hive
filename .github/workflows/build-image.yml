@@ -40,6 +40,10 @@ jobs:
       - name: Checkout ubi-hive
         uses: actions/checkout@v4
 
+      - name: test
+        run: |
+          echo pwd
+          
       - name: Build Image
         run: |
           ./build_deploy.sh ${{ secrets.ACCESS_TOKEN }}
