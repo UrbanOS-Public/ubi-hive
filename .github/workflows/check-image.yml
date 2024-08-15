@@ -15,7 +15,7 @@ jobs:
       - name: Check change
         run: |
           skopeo inspect "docker://$(grep -Po '(?<=FROM )([^"]+)' Dockerfile)" | grep -Po '(?<="Digest": ")([^"]+)' > .baseimagedigest
-          docker run --rm --entrypoint sh -u 0 quay.io/cloudservices/ubi-hive:latest -c \
+          docker run --rm --entrypoint sh -u 0 quay.io/urbanos/ubi-hive:latest -c \
             'yum upgrade -y --security > /dev/null; rpm -qa | sort | sha256sum' \
             >> .baseimagedigest
       - name: Do change if the digest changed
