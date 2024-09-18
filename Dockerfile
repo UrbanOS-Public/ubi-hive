@@ -9,6 +9,7 @@ LABEL io.k8s.display-name="UrbanOS Hive Metastore" \
 RUN \
     subscription-manager register --username ijabbott --password QG@pcD!YpFCgGx5o && \
     yum updateinfo list --security --nogpgcheck && \
+    yum updateinfo list cves && \
     yum -y update && yum clean all && \
     # symlink the python3.6 installed in the container
     ln -s /usr/libexec/platform-python /usr/bin/python && \
