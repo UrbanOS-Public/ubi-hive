@@ -8,9 +8,9 @@ IMAGE_REPO="quay.io"
 ORG="urbanos"
 APP="ubi-hive"
 IMAGE="${IMAGE_REPO}/${ORG}/${APP}"
-IMAGE_TAG="$(${SCRIPT_DIR}/get_image_tag.sh)-hadoop-3.3.6"
+IMAGE_TAG_ARM="$(${SCRIPT_DIR}/get_image_tag.sh)-hadoop-3.3.6-arm"
+IMAGE_TAG_AMD="$(${SCRIPT_DIR}/get_image_tag.sh)-hadoop-3.3.6-amd"
 echo $(${SCRIPT_DIR}/get_image_tag.sh)
-echo $IMAGE_TAG
 export ACCESS_TOKEN=$1
 
 if [[ -z "$QUAY_USER" || -z "$QUAY_TOKEN" ]]; then
@@ -38,10 +38,13 @@ trap job_cleanup EXIT ERR SIGINT SIGTERM
 DOCKER_CONF="$TMP_JOB_DIR/.docker"
 mkdir -p "$DOCKER_CONF"
 docker --config="$DOCKER_CONF" login -u="$QUAY_USER" -p="$QUAY_TOKEN" quay.io
-docker --config="$DOCKER_CONF" build -t "${IMAGE}:${IMAGE_TAG}" ${SCRIPT_DIR} --secret id=ACCESS_TOKEN --progress=plain --no-cache
-docker --config="$DOCKER_CONF" push "${IMAGE}:${IMAGE_TAG}"
+docker --config="$DOCKER_CONF" build -t "${IMAGE}:${IMAGE_TAG_ARM}" ${SCRIPT_DIR} --secret id=ACCESS_TOKEN --progress=plain --no-cache --platform linux/arm64
+docker --config="$DOCKER_CONF" push "${IMAGE}:${IMAGE_TAG_ARM}"
 
-docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:latest"
+docker --config="$DOCKER_CONF" build -t "${IMAGE}:${IMAGE_TAG_AMD}" ${SCRIPT_DIR} --secret id=ACCESS_TOKEN --progress=plain --no-cache --platform linux/amd64
+docker --config="$DOCKER_CONF" push "${IMAGE}:${IMAGE_TAG_AMD}"
+
+docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG_AMD}" "${IMAGE}:latest"
 docker --config="$DOCKER_CONF" push "${IMAGE}:latest"
 
 docker --config="$DOCKER_CONF" logout

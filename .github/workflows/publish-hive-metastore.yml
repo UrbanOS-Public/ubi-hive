@@ -39,10 +39,6 @@ jobs:
     steps:          
       - name: Checkout ubi-hive
         uses: actions/checkout@v4
-
-      - name: test
-        run: |
-          ./get_image_tag.sh
           
       - name: Build Image
         run: |
