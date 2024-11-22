@@ -6,15 +6,9 @@ name: Publish Hive Metastore
 # documentation.
 
 on:
-  # schedule:
-  #   - cron: '*/15 * * * *'
   workflow_dispatch:
-  # push:
-  #   branches: [ "main" ]
-  #   # Publish semver tags as releases.
-  #   tags: [ 'v*.*.*' ]
-  # pull_request:
-  #   branches: [ "main" ]
+  push:
+    branches: [ "main" ]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -46,12 +40,4 @@ jobs:
           
       - name: Build Image
         run: |
-          ./build_deploy.sh ${{ secrets.ACCESS_TOKEN }}
-
-
-
-
-          
-
-
-          
+          ./build_deploy.sh ${{ secrets.ACCESS_TOKEN }}          
