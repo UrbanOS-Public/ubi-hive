@@ -29,4 +29,4 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           title: 'chore(image): update base image'
-          reviewers: 'ian-j-abbott-accenture'
+          reviewers: 'ian-j-abbott-accenture, som-sewardr1'
