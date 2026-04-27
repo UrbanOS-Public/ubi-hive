@@ -38,14 +38,14 @@ RUN \
     --mount=type=secret,id=ACCESS_TOKEN \
     ( \
     ACCESS_TOKEN=$(cat /run/secrets/ACCESS_TOKEN) && \
-    HADOOP_ARTIFACT_PATH=$(curl -fL \
+    HADOOP_ARTIFACT_PATH=$(curl -fL --no-progress-meter \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer $ACCESS_TOKEN" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
         https://api.github.com/repos/UrbanOS-Public/urbanos-hadoop/actions/artifacts 2>&1 | tee /tmp/hadoop_response.json \
         | jq -r '[.artifacts[] | select(.expired == false)] | .[0].archive_download_url' \
     ) && \
-    HIVE_ARTIFACT_PATH=$(curl -fL \
+    HIVE_ARTIFACT_PATH=$(curl -fL --no-progress-meter \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer $ACCESS_TOKEN" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
