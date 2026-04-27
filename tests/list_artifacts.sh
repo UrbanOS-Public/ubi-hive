@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Checking the status of the urbanos artificats we depend on...."
+
 curl -fL \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: token $ACCESS_TOKEN" \

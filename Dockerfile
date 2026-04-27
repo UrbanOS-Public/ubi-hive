@@ -36,6 +36,7 @@ ENV METASTORE_HOME=/opt/hive-metastore-bin
 RUN mkdir -p ${HADOOP_HOME} ${METASTORE_HOME}
 RUN \
     --mount=type=secret,id=ACCESS_TOKEN \
+    ( \
     ACCESS_TOKEN=$(cat /run/secrets/ACCESS_TOKEN) && \
     HADOOP_ARTIFACT_PATH=$(curl -fL \
         -H "Accept: application/vnd.github+json" \
@@ -72,7 +73,23 @@ RUN \
     unzip hive_artifact.zip -d ${METASTORE_HOME} && \
     tar -xvf ${METASTORE_HOME}/hive-3.1.tar -C ${METASTORE_HOME} --strip-components=2 && \
     rm hive_artifact.zip && \
-    rm ${METASTORE_HOME}/hive-3.1.tar
+    rm ${METASTORE_HOME}/hive-3.1.tar \
+    ) || \
+    { \
+        if [ -f /tmp/hadoop_response.json ] || [ -f /tmp/hive_response.json ]; then \
+            if [ -f /tmp/hadoop_response.json ]; then \
+                echo "=== /tmp/hadoop_response.json ==="; \
+                cat /tmp/hadoop_response.json; \
+            fi; \
+            if [ -f /tmp/hive_response.json ]; then \
+                echo "=== /tmp/hive_response.json ==="; \
+                cat /tmp/hive_response.json; \
+            fi; \
+        else \
+            echo "Neither /tmp/hadoop_response.json nor /tmp/hive_response.json was created."; \
+        fi; \
+        exit 1; \
+    }
 
 RUN \
     # Configure Hadoop AWS Jars to be available to hive
