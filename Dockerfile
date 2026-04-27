@@ -71,9 +71,7 @@ RUN \
         -H "X-GitHub-Api-Version: 2022-11-28" \
         "${HIVE_ARTIFACT_PATH}" -o hive_artifact.zip && \
     unzip hive_artifact.zip -d ${METASTORE_HOME} && \
-    tar -xvf ${METASTORE_HOME}/hive-3.1.tar -C ${METASTORE_HOME} --strip-components=2 && \
-    rm hive_artifact.zip && \
-    rm ${METASTORE_HOME}/hive-3.1.tar \
+    rm hive_artifact.zip \
     ) || \
     { \
         if [ -f /tmp/hadoop_response.json ] || [ -f /tmp/hive_response.json ]; then \
