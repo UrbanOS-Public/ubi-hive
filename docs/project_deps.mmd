@@ -1,0 +1,37 @@
+graph TD
+    %% https://mermaid.live to view / edit
+    A["urbanos-hadoop<br/>(Repository)"]
+    B["urbanos-hive<br/>(Repository)"]
+    C["ubi-hive<br/>(Repository)"]
+    
+    A1["CI Workflow:<br/>Build Hadoop 3.3.6"]
+    A2["Artifact:<br/>hadoop-artifact.zip"]
+    
+    B1["CI Workflow:<br/>Build Hive 3.1.3"]
+    B2["Artifact:<br/>hive-artifact.zip"]
+    
+    C1["CI Workflow:<br/>publish-hive-metastore.yml"]
+    C2["Docker Build"]
+    C3["Container Image:<br/>quay.io/urbanos/ubi-hive"]
+    
+    A --> A1
+    A1 -->|generates| A2
+    A2 -->|downloaded by| C2
+    
+    B --> B1
+    B1 -->|generates| B2
+    B2 -->|downloaded by| C2
+    
+    C --> C1
+    C1 -->|triggers| C2
+    C2 -->|creates| C3
+    C3 -->|pushed to| D["Quay.io Registry"]
+    
+    style A fill:#e1f5ff,color:#000
+    style B fill:#e1f5ff,color:#000
+    style C fill:#fff3e0,color:#000
+    style A2 fill:#c8e6c9,color:#000
+    style B2 fill:#c8e6c9,color:#000
+    style C3 fill:#f8bbd0,color:#000
+    style D fill:#ede7f6,color:#000
+    
